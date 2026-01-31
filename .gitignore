@@ -1,0 +1,11 @@
+# Archivos del sistema
+__pycache__/
+
+# Entorno virtual
+venv/
+
+# Configuración de Django
+*.db
+
+# Archivos de usuario
+.vscode/
