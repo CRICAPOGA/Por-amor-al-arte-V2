@@ -1,0 +1,190 @@
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block title %}{% trans "Registrarse" %}{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <h2>{% trans "Crear Cuenta" %}</h2>
+
+    <form method="post" class="signup-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="id_email">{% trans "Email" %}</label>
+            <input type="email" name="email" id="id_email" required autofocus class="form-control">
+            {% if form.email.errors %}
+                <div class="error-message">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_username">{% trans "Usuario" %}</label>
+            <input type="text" name="username" id="id_username" required class="form-control">
+            <small>{% trans "Solo letras, números y guiones." %}</small>
+            {% if form.username.errors %}
+                <div class="error-message">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_password1">{% trans "Contraseña" %}</label>
+            <input type="password" name="password1" id="id_password1" required class="form-control">
+            {% if form.password1.errors %}
+                <div class="error-message">{{ form.password1.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_password2">{% trans "Confirmar Contraseña" %}</label>
+            <input type="password" name="password2" id="id_password2" required class="form-control">
+            {% if form.password2.errors %}
+                <div class="error-message">{{ form.password2.errors }}</div>
+            {% endif %}
+        </div>
+
+        {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary">{% trans "Registrarse" %}</button>
+    </form>
+
+    <hr>
+
+    <h3>{% trans "O regístrate con" %}</h3>
+    <div class="social-signup">
+        {% if providers.google %}
+            <a href="{% provider_login_url 'google' %}" class="btn btn-google">
+                <img src="https://www.gstatic.com/images/branding/product/1x/googleg_16dp.png" alt="Google">
+                {% trans "Google" %}
+            </a>
+        {% endif %}
+    </div>
+
+    <p class="login-link">
+        {% trans "¿Ya tienes cuenta?" %} 
+        <a href="{% url 'account_login' %}">{% trans "Inicia sesión aquí" %}</a>
+    </p>
+</div>
+
+<style>
+    .signup-container {
+        max-width: 450px;
+        margin: 50px auto;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .signup-container h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #555;
+    }
+
+    .form-group small {
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
+        color: #888;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #4CAF50;
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+    }
+
+    .error-message {
+        color: #d32f2f;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-primary {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        font-weight: bold;
+    }
+
+    .btn-primary:hover {
+        background-color: #45a049;
+    }
+
+    .social-signup {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    .btn-google {
+        background-color: #fff;
+        color: #333;
+        border: 1px solid #ddd;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-google:hover {
+        background-color: #f0f0f0;
+    }
+
+    hr {
+        margin: 30px 0;
+        border: none;
+        border-top: 1px solid #ddd;
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 14px;
+    }
+
+    .login-link a {
+        color: #4CAF50;
+        text-decoration: none;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}

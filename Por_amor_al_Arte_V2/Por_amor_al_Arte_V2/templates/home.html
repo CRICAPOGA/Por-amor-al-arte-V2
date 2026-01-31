@@ -5,3 +5,6 @@
 <a href="{% url 'nuestro_proposito' %}">Nuestro Propósito</a>
 <a href="{% url 'experiencia' %}">Experiencia</a>
 <a href="{% url 'nuestros_artistas' %}">Nuestros Artistas</a>
+
+{% load socialaccount %}
+<a href="{% provider_login_url 'google' %}">Iniciar sesión</a>
