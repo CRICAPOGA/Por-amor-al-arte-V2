@@ -1,168 +1,61 @@
+{% extends "account/base_entrance.html" %}
 {% load i18n %}
-{% load account socialaccount %}
-
-{% block title %}{% trans "Iniciar Sesión" %}{% endblock %}
-
+{% load allauth account %}
+{% block head_title %}
+    {% trans "Sign In" %}
+{% endblock head_title %}
 {% block content %}
-<div class="login-container">
-    <h2>{% trans "Iniciar Sesión" %}</h2>
-
-    <form method="post" class="login-form">
-        {% csrf_token %}
-        
-        <div class="form-group">
-            <label for="id_login">{% trans "Email o Usuario" %}</label>
-            <input type="text" name="login" id="id_login" required autofocus class="form-control">
-        </div>
-
-        <div class="form-group">
-            <label for="id_password">{% trans "Contraseña" %}</label>
-            <input type="password" name="password" id="id_password" required class="form-control">
-        </div>
-
-        <div class="form-group">
-            <label for="id_remember">
-                <input type="checkbox" name="remember" id="id_remember">
-                {% trans "Recuérdame" %}
-            </label>
-        </div>
-
-        {% if redirect_field_value %}
-        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-        {% endif %}
-
-        <button type="submit" class="btn btn-primary">{% trans "Iniciar Sesión" %}</button>
-    </form>
-
-    <hr>
-
-    <h3>{% trans "O inicia sesión con" %}</h3>
-    <div class="social-login">
-        {% if providers.google %}
-            <a href="{% provider_login_url 'google' %}" class="btn btn-google">
-                <img src="https://www.gstatic.com/images/branding/product/1x/googleg_16dp.png" alt="Google">
-                {% trans "Google" %}
+    {% element h1 %}
+        {% trans "Sign In" %}
+    {% endelement %}
+    {% if not SOCIALACCOUNT_ONLY %}
+        {% setvar link %}
+            <a href="{{ signup_url }}">
+            {% endsetvar %}
+            {% setvar end_link %}
             </a>
-        {% endif %}
-    </div>
-
-    <p class="signup-link">
-        {% trans "¿No tienes cuenta?" %} 
-        <a href="{% url 'account_signup' %}">{% trans "Regístrate aquí" %}</a>
-    </p>
-
-    <p class="forgot-password">
-        <a href="{% url 'account_reset_password' %}">{% trans "¿Olvidaste tu contraseña?" %}</a>
-    </p>
-</div>
-
-<style>
-    .login-container {
-        max-width: 400px;
-        margin: 50px auto;
-        padding: 30px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .login-container h2 {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #333;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 500;
-        color: #555;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-        box-sizing: border-box;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #4CAF50;
-        box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
-    }
-
-    .btn {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        text-decoration: none;
-        display: inline-block;
-        text-align: center;
-    }
-
-    .btn-primary {
-        width: 100%;
-        background-color: #4CAF50;
-        color: white;
-        font-weight: bold;
-    }
-
-    .btn-primary:hover {
-        background-color: #45a049;
-    }
-
-    .social-login {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        margin: 20px 0;
-    }
-
-    .btn-google {
-        background-color: #fff;
-        color: #333;
-        border: 1px solid #ddd;
-        padding: 10px 15px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .btn-google:hover {
-        background-color: #f0f0f0;
-    }
-
-    hr {
-        margin: 30px 0;
-        border: none;
-        border-top: 1px solid #ddd;
-    }
-
-    .signup-link,
-    .forgot-password {
-        text-align: center;
-        margin-top: 15px;
-        font-size: 14px;
-    }
-
-    .signup-link a,
-    .forgot-password a {
-        color: #4CAF50;
-        text-decoration: none;
-    }
-
-    .signup-link a:hover,
-    .forgot-password a:hover {
-        text-decoration: underline;
-    }
-</style>
+        {% endsetvar %}
+        {% element p %}
+            {% blocktranslate %}If you have not created an account yet, then please {{ link }}sign up{{ end_link }} first.{% endblocktranslate %}
+        {% endelement %}
+        {% url 'account_login' as login_url %}
+        {% element form form=form method="post" action=login_url tags="entrance,login" %}
+            {% slot body %}
+                {% csrf_token %}
+                {% element fields form=form unlabeled=True %}
+                {% endelement %}
+                {{ redirect_field }}
+            {% endslot %}
+            {% slot actions %}
+                {% element button type="submit" tags="prominent,login" %}
+                    {% trans "Sign In" %}
+                {% endelement %}
+            {% endslot %}
+        {% endelement %}
+    {% endif %}
+    {% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
+        {% element hr %}
+        {% endelement %}
+        {% element button_group vertical=True %}
+            {% if PASSKEY_LOGIN_ENABLED %}
+                {% element button type="submit" form="mfa_login" id="passkey_login" tags="prominent,login,outline,primary" %}
+                    {% trans "Sign in with a passkey" %}
+                {% endelement %}
+            {% endif %}
+            {% if LOGIN_BY_CODE_ENABLED %}
+                {% element button href=request_login_code_url tags="prominent,login,outline,primary" %}
+                    {% trans "Send me a sign-in code" %}
+                {% endelement %}
+            {% endif %}
+        {% endelement %}
+    {% endif %}
+    {% if SOCIALACCOUNT_ENABLED %}
+        {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+    {% endif %}
+{% endblock content %}
+{% block extra_body %}
+    {{ block.super }}
+    {% if PASSKEY_LOGIN_ENABLED %}
+        {% include "mfa/webauthn/snippets/login_script.html" with button_id="passkey_login" %}
+    {% endif %}
 {% endblock %}
